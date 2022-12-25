@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  node:
+    build:
+      context: ./
+    ports:
+      - '3000:3000'
+    container_name: crud_js
+    volumes:
+       - .:/usr/app
+    #   - /usr/src/app/node_modules
+    user: node
+    command:
+      - npm
+      - run
+      - start:dev
+
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'secreet'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'mysql_volume:/var/lib/mysql'
+      - ./dockerConfig/mysql-dev-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      retries: 3
+      timeout: 5s
+
+volumes:
+  mysql_volume:
